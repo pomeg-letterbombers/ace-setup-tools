@@ -223,7 +223,7 @@ toolForm.addEventListener("submit", function(e) {
     e.preventDefault();
     const params = new FormData(toolForm);
     const adjustmentType = params.get("adjustment-type");
-    const encryptionKey = Number(params.get("adjustment-type"));
+    const encryptionKey = Number(params.get("encryption-key"));
     const oldSpecies = Number(params.get("old-species"));
     const newSpecies = Number(params.get("new-species"));
     let checksumWord = NaN;
@@ -242,8 +242,6 @@ toolForm.addEventListener("submit", function(e) {
     } else {
         checksumWord = Number(params.get("checksum-word"))
     }
-    console.log(easychatData);
-    console.log(checksumWord);
     out.querySelector("#wordindexOut").innerText = "0x" + checksumWord.toString(16).padStart(4, "0").toUpperCase();
     out.querySelector("#wordgroupOut").innerText = easychatData.get(checksumWord).Group;
     out.querySelector("#wordOut").innerText = easychatData.get(checksumWord).Word;
