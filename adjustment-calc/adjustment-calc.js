@@ -30,7 +30,7 @@ function calcAdjustment(encryptionKey, oldSpecies, newSpecies, checksumWord) {
     }
     const checksumDiff = Math.max(oldSpecies, newSpecies) - Math.min(oldSpecies, newSpecies);
     const decryptedValue = checksumWord ^ encryptionKey;
-    return checksumDiff + decryptedValue & 0xFFFF >>> 0;
+    return checksumDiff + decryptedValue & 0xFFFF;
 }
 
 function calcExpAdjustment(baseAdjustment, experience) {
@@ -224,7 +224,7 @@ toolForm.addEventListener("submit", function(e) {
     const params = new FormData(toolForm);
     const adjustmentType = params.get("adjustment-type");
     const encryptionKey = Number(params.get("encryption-key"));
-    const oldSpecies = Number(params.get("old-species"));
+    const oldSpecies = Number(params.get("base-species"));
     const newSpecies = Number(params.get("new-species"));
     let checksumWord = NaN;
     if (params.get("search-ecs")) {
