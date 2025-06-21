@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <main>
+            <header class="d-flex justify-content-between">
+                <h1 class="display-6">Donor Search</h1>
+                <div>
+                    <a href="..">Back</a>
+                </div>
+            </header>
+            <div class="alert alert-primary">
+                <p>Hexadecimal seeds must be entered with a <kbd>0x</kbd> in front.</p>
+            </div>
+            <form autocomplete="off">
+                <div class="row">
+                    <div class="col-md-4">
+                        <fieldset class="row mb-2">
+                            <legend class="col-form-label col-sm-5 pt-0">Game version</legend>
+                            <div class="col-sm-7">
+                                <div class="form-check">
+                                    <input
+                                        id="gameVersionRadio1"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="game-version"
+                                        value="firered"
+                                        required>
+                                    <label class="form-check-label" for="gameVersionRadio1">FireRed</label>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        id="gameVersionRadio2"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="game-version"
+                                        value="leafgreen"
+                                        required>
+                                    <label class="form-check-label" for="gameVersionRadio2">LeafGreen</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="row mb-2">
+                            <legend class="col-form-label col-sm-5 pt-0">Encounter type</legend>
+                            <div class="col-sm-7">
+                                <div class="form-check">
+                                    <input
+                                        id="encounterTypeRadio1"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="encounter-type"
+                                        value="static"
+                                        required>
+                                    <label class="form-check-label" for="encounterTypeRadio1">Static</label>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        id="encounterTypeRadio2"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="encounter-type"
+                                        value="wild"
+                                        required>
+                                    <label class="form-check-label" for="encounterTypeRadio2">Wild</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="row mb-2">
+                            <label for="seedInput" class="col-sm-5 col-form-label">Seed</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="seedInput"
+                                    class="form-control"
+                                    name="seed"
+                                    type="text"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="tidInput" class="col-sm-5 col-form-label">TID</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="tidInput"
+                                    class="form-control"
+                                    name="tid"
+                                    type="number"
+                                    min="0"
+                                    max="65535"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="initialAdvanacesInput" class="col-sm-5 col-form-label">Initial advances</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="initialAdvancesInput"
+                                    class="form-control"
+                                    name="initial-advances"
+                                    type="number"
+                                    min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="advancesInput" class="col-sm-5 col-form-label">Advances</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="advancesInput"
+                                    class="form-control"
+                                    name="advances"
+                                    type="number"
+                                    min="1"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="delayInput" class="col-sm-5 col-form-label">Delay</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="delayInput"
+                                    class="form-control"
+                                    name="delay"
+                                    type="number"
+                                    min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <button id="findButton" class="btn btn-primary w-100" type="submit">Find</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row mb-2 d-none">
+                            <label for="resultsOutput" class="form-label">Results</label>
+                        </div>
+                        <output id="resultsOutput" name="results" class="row mb-2">
+                            <table class="table table-bordered table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Advance</th>
+                                        <th scope="col">PID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody"></tbody>
+                            </table>
+                        </output>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="donor-search.js" defer="defer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>

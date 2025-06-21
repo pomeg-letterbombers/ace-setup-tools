@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checksum Adjustment Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <main>
+            <header class="d-flex justify-content-between">
+                <h1 class="display-6">Checksum Adjustment Calculator</h1>
+                <div>
+                    <a href="..">Back</a>
+                </div>
+            </header>
+            <div class="alert alert-primary">
+                <p>Hexadecimal values must be entered with a <kbd>0x</kbd> in front.</p>
+            </div>
+            <form autocomplete="off">
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="row mb-2">
+                            <legend class="col-form-label col-sm-5 pt-0">Adjustment type</legend>
+                            <div class="col-sm-7">
+                                <div class="form-check">
+                                    <input
+                                        id="adjustmentTypeRadio1"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="adjustment-type"
+                                        value="experience"
+                                        required>
+                                    <label class="form-check-label" for="adjustmentTypeRadio1">Experience</label>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        id="adjustmentTypeRadio2"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="adjustment-type"
+                                        value="ev"
+                                        required>
+                                    <label class="form-check-label" for="adjustmentTypeRadio2">EV</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="row mb-2">
+                            <label for="encryptInput" class="col-sm-5 col-form-label">Encryption key</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="encryptInput"
+                                    class="form-control"
+                                    name="encryption-key"
+                                    type="text"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="baseSpeciesInput" class="col-sm-5 col-form-label">Base species</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="baseSpeciesInput"
+                                    class="form-control"
+                                    name="base-species"
+                                    type="text"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label for="newSpeciesInput" class="col-sm-5 col-form-label">New species</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="newSpeciesInput"
+                                    class="form-control"
+                                    name="new-species"
+                                    type="text"
+                                    required>
+                            </div>
+                        </div>
+                        <fieldset class="row mb-2">
+                            <legend class="col-form-label col-12 pt-0">Checksum word settings</legend>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input
+                                        id="searchecsCheckbox"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="search-ecs">
+                                    <label class="form-check-label" for="searchecsCheckbox">Search easy chat words</label>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        id="unlockableCheckbox"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="use-unlockable"
+                                        disabled>
+                                    <label class="form-check-label" for="unlockableCheckbox">Use unlockable words</label>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        id="poste4Checkbox"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="use-post-e4"
+                                        disabled>
+                                    <label class="form-check-label" for="poste4Checkbox">Use post-Elite Four words</label>
+                                </div>
+                                <div class="row">
+                                    <label for="wordInput" class="col-sm-5 col-form-label">Checksum word index</label>
+                                    <div class="col-sm-7">
+                                        <input
+                                            id="wordInput"
+                                            class="form-control"
+                                            name="checksum-word"
+                                            type="text"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div id="experienceInputControl" class="d-none row mb-2">
+                            <label for="experienceInput" class="col-sm-5 col-form-label">Experience</label>
+                            <div class="col-sm-7">
+                                <input
+                                    id="experienceInput"
+                                    class="form-control"
+                                    name="experience"
+                                    type="number"
+                                    min="0"
+                                    max="4294967295"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <button id="findButton" class="btn btn-primary w-100" type="submit">Find</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row mb-2 d-none">
+                            <label for="resultsOutput" class="form-label">Results</label>
+                        </div>
+                        <output id="resultsOutput" name="results" class="row mb-2">
+                            <dl class="row">
+                                <dt class="col-4">Checksum word index</dt>
+                                <dd class="col-8" id="wordindexOut"></dd>
+                                <dt class="col-4">Checksum word group</dt>
+                                <dd class="col-8" id="wordgroupOut"></dd>
+                                <dt class="col-4">Checksum word</dt>
+                                <dd class="col-8" id="wordOut"></dd>
+                                <dt class="col-4">Adjustment</dt>
+                                <dd class="col-8" id="adjustOut"></dd>
+                            </dl>
+                        </output>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="adjustment-calc.js" defer="defer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>
