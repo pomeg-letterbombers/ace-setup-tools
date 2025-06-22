@@ -67,6 +67,57 @@ fetch(csvURL)
 const toolForm = document.forms[0];
 const out = toolForm.elements.namedItem("resultsOutput");
 
+function filterEasyChat(useUnlockable, usePostElite4) {
+    // Word groups are determined by a bit shift right by 9
+    const filteredEasyChat = [...easychatData.keys()];
+    const UNLOCKABLE_GROUPS = new Set([
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
+        0x15,   // POKÉMON
+    ]);
+    const POST_E4_GROUPS = new Set([
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
+    ]);
+    const POST_E4_INDEX = (() => {
+        const POKEMON2_GROUP = 0x15 << 9
+        const indexes = new Set();
+            indexes.add(POKEMON2_GROUP | 146); // Moltres, can only be reached from Sevii Islands
+            // Exclude MEWTWO to CELEBII
+            for (let i = 150; i <= 251; i++) {
+                indexes.add(POKEMON2_GROUP | i);
+            }
+            return indexes;
+    })();
+    const filteredGroups = new Set();
+    const filteredIndexes = new Set();
+    if (!useUnlockable) {
+        for (const group of UNLOCKABLE_GROUPS) {
+            filteredGroups.add(group);
+        }
+    } else if (!usePostElite4) {
+        for (const group of POST_E4_GROUPS) {
+            filteredGroups.add(group);
+        }
+        for (const index of POST_E4_INDEX) {
+            filteredIndexes.add(index);
+        }
+    }
+    for (let i = filteredEasyChat.length - 1; i >= 0; i--) {
+        if (
+            filteredGroups.has(filteredEasyChat[i] >>> 9)
+            || filteredIndexes.has(filteredEasyChat[i])
+        ) {
+            filteredEasyChat.splice(i, 1);
+        }
+    }
+    return new Set(filteredEasyChat);
+}
+
 function getAdjustmentType(pid) {
     if (typeof pid !== "number") {
         throw new Error();
@@ -81,10 +132,11 @@ function getAdjustmentType(pid) {
     return "";
 }
 
-function findSpeciesWord(encryptionKey, targetSpeciesList) {
+function findSpeciesWord(encryptionKey, targetSpeciesList, wordList) {
     if (!(
         typeof encryptionKey === "number"
         && targetSpeciesList.constructor === Map
+        && wordList.constructor === Set
     )) {
         throw new Error();
     }
@@ -95,7 +147,7 @@ function findSpeciesWord(encryptionKey, targetSpeciesList) {
             throw new Error();
         }
         const encryptedSpecies = speciesIndex ^ encryptionKey;
-        if (easychatData.has(encryptedSpecies)) {
+        if (wordList.has(encryptedSpecies)) {
             words.push([speciesIndex, encryptedSpecies]);
         }
     }
@@ -115,7 +167,7 @@ function calculateBoxLocation(entrypoint) {
 
 toolForm.elements.namedItem("pid").addEventListener("input", function() {
     this.setCustomValidity("");
-})
+});
 
 toolForm.elements.namedItem("pid").addEventListener("blur", function() {
     const n = Number(this.value);
@@ -126,7 +178,16 @@ toolForm.elements.namedItem("pid").addEventListener("blur", function() {
         this.setCustomValidity("");
     }
     document.activeElement.blur();
-})
+});
+
+toolForm.elements.namedItem("use-unlockable").addEventListener("input", (e) => {
+    if (e.target.checked) {
+        toolForm.elements.namedItem("use-post-e4").disabled = false;
+    } else {
+        toolForm.elements.namedItem("use-post-e4").checked = false;
+        toolForm.elements.namedItem("use-post-e4").disabled = true;
+    }
+});
 
 toolForm.onsubmit = () => false;
 toolForm.addEventListener("submit", function(e) {
@@ -148,7 +209,16 @@ toolForm.addEventListener("submit", function(e) {
     }
     const encryptionKey = ((pid >>> 0) ^ (tid >>> 0)) & 0xffff;
     const adjustmentType = getAdjustmentType(pid);
-    const words = adjustmentType !== "" ? findSpeciesWord(encryptionKey, speciesList) : [];
+    const words = adjustmentType !== ""
+                    ? findSpeciesWord(
+                        encryptionKey,
+                        speciesList,
+                        filterEasyChat(
+                            Boolean(params.get("use-unlockable")),
+                            Boolean(params.get("use-post-e4"))
+                        )
+                    )
+                    : [];
     const outPidorder = out.querySelector("#pidorderOut");
     const outEncrypt = out.querySelector("#encryptionOut");
     const outAdjust = out.querySelector("#adjustOut");
