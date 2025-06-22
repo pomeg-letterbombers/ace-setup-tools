@@ -176,6 +176,17 @@ toolForm.elements.namedItem("search-ecs").addEventListener("input", (e) => {
     }
 });
 
+toolForm.elements.namedItem("checksum-word").addEventListener("blur", function() {
+    const input = Number(this.value);
+    if (isNaN(input) || !easychatData.has(input)) {
+        this.setCustomValidity("Invalid easy chat word");
+        this.reportValidity();
+    } else {
+        this.setCustomValidity("");
+    }
+    document.activeElement.blur();
+});
+
 toolForm.elements.namedItem("encryption-key").addEventListener("blur", function() {
     const n = Number(this.value);
     if (isNaN(n) || !(n >= 0 && n <= 0xffff)) {
@@ -240,7 +251,7 @@ toolForm.addEventListener("submit", function(e) {
             Number(params.get("experience"))
         )
     } else {
-        checksumWord = Number(params.get("checksum-word"))
+        checksumWord = Number(params.get("checksum-word"));
     }
     out.querySelector("#wordindexOut").innerText = "0x" + checksumWord.toString(16).padStart(4, "0").toUpperCase();
     out.querySelector("#wordgroupOut").innerText = easychatData.get(checksumWord).Group;
