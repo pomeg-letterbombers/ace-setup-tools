@@ -237,15 +237,13 @@ toolForm.addEventListener("submit", function(e) {
     const newSpecies = Number(params.get("new-species"));
     let checksumWord = NaN;
     if (params.get("search-ecs")) {
-        const useUnlockable = Boolean(params.get("use-unlockable"));
-        const usePostElite4 = Boolean(params.get("use-post-e4"));
         checksumWord = searchChecksumWords(
             adjustmentType,
             encryptionKey,
             oldSpecies,
             newSpecies,
-            useUnlockable,
-            usePostElite4,
+            Boolean(params.get("use-unlockable")),
+            Boolean(params.get("use-post-e4")),
             Number(params.get("experience"))
         )
     } else {
