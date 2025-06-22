@@ -60,19 +60,17 @@ function filterEasyChat(useUnlockable, usePostElite4) {
     // Word groups are determined by a bit shift right by 9
     const filteredEasyChat = [...easychatData.keys()];
     const UNLOCKABLE_GROUPS = new Set([
-        0x0,
-        0x11,
-        0x12,
-        0x13,
-        0x14,
-        0x15,
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
+        0x15,   // POKÉMON
     ]);
     const POST_E4_GROUPS = new Set([
-        0x0,
-        0x11,
-        0x12,
-        0x13,
-        0x14,
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
     ]);
     const POST_E4_INDEX = (() => {
         const POKEMON2_GROUP = 0x15 << 9
