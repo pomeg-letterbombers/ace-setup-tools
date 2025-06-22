@@ -42,6 +42,57 @@ if (out.constructor !== HTMLTableSectionElement) {
     throw new Error();
 }
 
+function filterEasyChat(useUnlockable, usePostElite4) {
+    // Word groups are determined by a bit shift right by 9
+    const filteredEasyChat = [...easychatData.keys()];
+    const UNLOCKABLE_GROUPS = new Set([
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
+        0x15,   // POKÉMON
+    ]);
+    const POST_E4_GROUPS = new Set([
+        0x0,    // POKÉMON2
+        0x11,   // EVENTS
+        0x12,   // MOVE 1
+        0x13,   // MOVE 2
+    ]);
+    const POST_E4_INDEX = (() => {
+        const POKEMON2_GROUP = 0x15 << 9
+        const indexes = new Set();
+            indexes.add(POKEMON2_GROUP | 146); // Moltres, can only be reached from Sevii Islands
+            // Exclude MEWTWO to CELEBII
+            for (let i = 150; i <= 251; i++) {
+                indexes.add(POKEMON2_GROUP | i);
+            }
+            return indexes;
+    })();
+    const filteredGroups = new Set();
+    const filteredIndexes = new Set();
+    if (!useUnlockable) {
+        for (const group of UNLOCKABLE_GROUPS) {
+            filteredGroups.add(group);
+        }
+    } else if (!usePostElite4) {
+        for (const group of POST_E4_GROUPS) {
+            filteredGroups.add(group);
+        }
+        for (const index of POST_E4_INDEX) {
+            filteredIndexes.add(index);
+        }
+    }
+    for (let i = filteredEasyChat.length - 1; i >= 0; i--) {
+        if (
+            filteredGroups.has(filteredEasyChat[i] >>> 9)
+            || filteredIndexes.has(filteredEasyChat[i])
+        ) {
+            filteredEasyChat.splice(i, 1);
+        }
+    }
+    return new Set(filteredEasyChat);
+}
+
 class PokeRNG {
     state;
     constructor(seed) {
@@ -124,18 +175,21 @@ function* wildPIDRNG(
     }
 }
 
-function hasWordsCheck(pid, tid, targetValues) {
+function hasWordsCheck(pid, tid, targetValues, wordList) {
+    if (wordList.constructor !== Set) {
+        throw new Error();
+    }
     const encryptionKey = ((pid >>> 0) ^ (tid >>> 0)) & 0xffff;
     for (const targetValue of targetValues) {
         const encryptedValue = targetValue ^ encryptionKey;
-        if (easychatData.has(encryptedValue)) {
+        if (wordList.has(encryptedValue)) {
             return true;
         }
     }
     return false;
 }
 
-function searchPIDRNG(tid, initialAdvances, rng, glitchmonList) {
+function searchPIDRNG(tid, initialAdvances, rng, glitchmonList, wordList) {
     const usableAdvances = [];
     let advanceCount = initialAdvances - 1;
     for (const pid of rng) {
@@ -143,7 +197,7 @@ function searchPIDRNG(tid, initialAdvances, rng, glitchmonList) {
         if (!COMPATIBLE_SUBSTRUCTURE_ORDERS.has((pid >>> 0) % 24)) {
             continue
         }
-        if (hasWordsCheck(pid, tid, glitchmonList)) {
+        if (hasWordsCheck(pid, tid, glitchmonList, wordList)) {
             usableAdvances.push([advanceCount, pid]);
         }
     }
@@ -164,6 +218,15 @@ toolForm.elements.namedItem("seed").addEventListener("blur", function() {
     }
     document.activeElement.blur();
 })
+
+toolForm.elements.namedItem("use-unlockable").addEventListener("input", (e) => {
+    if (e.target.checked) {
+        toolForm.elements.namedItem("use-post-e4").disabled = false;
+    } else {
+        toolForm.elements.namedItem("use-post-e4").checked = false;
+        toolForm.elements.namedItem("use-post-e4").disabled = true;
+    }
+});
 
 toolForm.onsubmit = () => false;
 toolForm.addEventListener("submit", function(e) {
@@ -205,8 +268,9 @@ toolForm.addEventListener("submit", function(e) {
         Number(params.get("tid")),
         Number(params.get("initial-advances")),
         rng,
-        glitchmonList
-    )
+        glitchmonList,
+        filterEasyChat(Boolean(params.get("use-unlockable")), Boolean(params.get("use-post-e4")))
+    );
     while (out.firstElementChild) {
         out.removeChild(out.lastElementChild);
     }
